@@ -8,19 +8,15 @@ const App = () => {
     bind: new RuntimeBinding(),
   });
   // connection.setBinding((data: any) => console.log('*** 🔥data2', data));
-  // const query = db.users.get.toJS();
-  const query1 = db.users.find(3).toJS();
-  // const query1 =
-  //   .toJS();
-  // const query2 = db.users.where('name', '=', 'name2').toJS();
+  // const query = db.users.get;
+  const query1 = db.users.find(3);
+  // const query2 = db.users.where('name', '=', 'name2');
   connection.query(
-    db.users
-      .insert({
-        id: 3,
-        name: 'user1',
-        email: 'user1@email.com',
-      })
-      .toJS()
+    db.users.insert({
+      id: 3,
+      name: 'user1',
+      email: 'user1@email.com',
+    })
   );
   connection.query(query1).then((resp: any) => {
     console.log('*** resp', resp);

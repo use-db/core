@@ -8,10 +8,11 @@ export class Connection {
   setBinding(bind: Binding) {
     this.bind = bind;
   }
-  query(query: QueryBuilder): Promise<any> {
+  query(query: any): Promise<any> {
+    let queryBuilder: QueryBuilder = query.toJS();
     return new Promise((resolve: any, reject: any) => {
       try {
-        resolve(this.bind.perform(query));
+        resolve(this.bind.perform(queryBuilder));
       } catch (err) {
         reject(err);
       }

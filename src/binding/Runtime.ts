@@ -12,6 +12,7 @@ export default class RuntimeBinding implements Binding {
   };
   // @ts-ignore
   perform(query: QueryBuilder): Promise<any> {
+    // TODO: remove this
     // @ts-ignore
     window['db'] = this.db;
     return new Promise((resolve, reject) => {
