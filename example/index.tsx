@@ -7,19 +7,61 @@ const App = () => {
   const connection = new Connection({
     bind: new RuntimeBinding(),
   });
-  // connection.setBinding((data: any) => console.log('*** 🔥data2', data));
-  // const query = db.users.get;
-  const query1 = db.users.find(3);
-  // const query2 = db.users.where('name', '=', 'name2');
-  connection.query(
-    db.users.insert({
-      id: 3,
+  let input = [
+    {
+      id: 1,
       name: 'user1',
       email: 'user1@email.com',
-    })
-  );
-  connection.query(query1).then((resp: any) => {
-    console.log('*** resp', resp);
+    },
+    {
+      id: 2,
+      name: 'user2',
+      email: 'user2@email.com',
+    },
+    {
+      id: 3,
+      name: 'user3',
+      email: 'user3@email.com',
+    },
+    {
+      id: 4,
+      name: 'user1',
+      email: 'user3@email.com',
+    },
+  ];
+  const query3 = db.users.findMany({
+    where: {
+      // id: 4,
+      name: 'user1',
+    },
+    select: ['name', 'email'],
+  });
+
+  input.forEach(val => {
+    connection.query(db.users.create({ data: val }));
+  });
+  let query4 = db.users.update({
+    where: { id: 4 },
+    data: { email: 'alice@prisma.io' },
+  });
+  const query5 = db.users.delete({
+    where: {
+      name: 'user2',
+    },
+    select: ['name', 'email'],
+  });
+  const query6 = db.users.deleteMany({
+    where: {
+      name: 'user1',
+    },
+  });
+  const query7 = db.users.count({
+    where: {
+      name: 'user1',
+    },
+  });
+  connection.query(query7).then((resp: any) => {
+    // console.log('*** resp', resp);
   });
   return <div>Hey</div>;
 };

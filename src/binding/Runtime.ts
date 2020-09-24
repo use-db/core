@@ -1,59 +1,115 @@
-import { find, get, isNil } from 'lodash';
+import { filter, findIndex, isEmpty } from 'lodash';
 import { Binding } from './';
-import { QueryBuilder } from './../';
+import { QueryData } from './../query';
 
 export default class RuntimeBinding implements Binding {
   db: any = {
-    users: [
-      // { id: 0, name: 'name1', email: 'name1@email' },
-      // { id: 1, name: 'name2', email: 'name2@email' },
-      // { id: 2, name: 'name3', email: 'name3@email' },
-    ],
+    users: [],
   };
-  // @ts-ignore
-  perform(query: QueryBuilder): Promise<any> {
+  perform(query: QueryData): Promise<any> {
     // TODO: remove this
     // @ts-ignore
     window['db'] = this.db;
     return new Promise((resolve, reject) => {
       try {
-        if (query.length < 2) {
+        if (!query.operation) {
           reject('Invalid query');
         }
-        resolve(this.processQuery(query));
+        let queryResponse = this.processQuery(query);
+        if (queryResponse.error) {
+          reject(queryResponse.error);
+        }
+        resolve(queryResponse.data);
       } catch (err) {
         reject(err);
       }
     });
   }
-  private processQuery(query: QueryBuilder) {
-    const table: string = query[0].toString();
-    const method = query[1];
+  private processQuery(query: QueryData): { data: any; error?: any } {
+    const { collection, operation, payload } = query;
     let returnValue: any;
-    switch (method) {
-      case 'get':
-        returnValue = this.db[table];
+    switch (operation) {
+      case 'create':
+        this.db[collection].push(payload.data);
         break;
-      case 'find':
-        if (query[2] !== 'string') {
-          let findId = get(query, '2.args.0');
-          if (!isNil(findId)) {
-            returnValue = find(
-              this.db[table],
-              (item: any) => item.id === findId
-            );
+      case 'update':
+        if (payload.hasOwnProperty('where')) {
+          let index = findIndex(this.db[collection], payload.where);
+          if (index !== -1 && payload.hasOwnProperty('data')) {
+            for (let childData in payload.data) {
+              this.db[collection][index][childData] = payload.data[childData];
+            }
           }
         }
         break;
-      case 'insert':
-        let data = get(query, '[2].args');
-        data.forEach((child: any) => {
-          this.db[table].push(child);
-        });
+      case 'findOne':
+        if (payload.hasOwnProperty('where')) {
+          let val = filter(this.db[collection], payload.where);
+          returnValue = val.length ? val[0] : undefined;
+        }
+        if (payload.hasOwnProperty('select')) {
+          let queryResult: any = {};
+          payload.select.forEach((selectOption: string) => {
+            queryResult[selectOption] = returnValue[selectOption];
+          });
+          returnValue = !isEmpty(queryResult) ? queryResult : undefined;
+        }
+        break;
+      case 'findMany':
+        if (payload.hasOwnProperty('where')) {
+          returnValue = filter(this.db[collection], payload.where);
+        }
+        if (payload.hasOwnProperty('select')) {
+          let queryResults: any = [];
+          returnValue.forEach((result: any, index: number) => {
+            queryResults.push({});
+            payload.select.forEach((selectOption: string) => {
+              queryResults[index][selectOption] =
+                returnValue[index][selectOption];
+            });
+          });
+          returnValue = queryResults;
+        }
+        break;
+      case 'delete':
+        if (payload.hasOwnProperty('where')) {
+          let index = findIndex(this.db[collection], payload.where);
+          if (index !== -1) {
+            returnValue = this.db[collection][index];
+            this.db[collection].splice(index, 1);
+          }
+        }
+        if (returnValue && payload.hasOwnProperty('select')) {
+          let queryResult: any = {};
+          payload.select.forEach((selectOption: string) => {
+            queryResult[selectOption] = returnValue[selectOption];
+          });
+          returnValue = !isEmpty(queryResult) ? queryResult : undefined;
+        }
+        break;
+      case 'deleteMany':
+        if (payload.hasOwnProperty('where')) {
+          let count = 0;
+          let valuesToDelete = filter(this.db[collection], payload.where);
+          valuesToDelete.forEach(val => {
+            let index = findIndex(this.db[collection], val);
+            if (index !== -1) {
+              count++;
+              this.db[collection].splice(index, 1);
+            }
+          });
+          returnValue = count;
+        }
+        break;
+      case 'count':
+        if (payload.hasOwnProperty('where')) {
+          let values = filter(this.db[collection], payload.where);
+          returnValue = values.length;
+        }
         break;
       default:
         break;
     }
-    return returnValue;
+    return { data: returnValue };
   }
 }

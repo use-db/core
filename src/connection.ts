@@ -1,4 +1,4 @@
-import { QueryBuilder } from './interfaces';
+import { QueryData } from './query';
 import { Binding } from './binding';
 export class Connection {
   bind: Binding;
@@ -8,11 +8,10 @@ export class Connection {
   setBinding(bind: Binding) {
     this.bind = bind;
   }
-  query(query: any): Promise<any> {
-    let queryBuilder: QueryBuilder = query.toJS();
+  query(query: QueryData): Promise<any> {
     return new Promise((resolve: any, reject: any) => {
       try {
-        resolve(this.bind.perform(queryBuilder));
+        resolve(this.bind.perform(query));
       } catch (err) {
         reject(err);
       }

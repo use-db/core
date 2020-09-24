@@ -1,47 +1,90 @@
-import { QueryBuilder } from './interfaces';
+export interface RootQueryBuilder {
+  [key: string]: QueryBuilder;
+}
+export interface QueryData {
+  collection: string;
+  operation: string;
+  payload: any;
+}
+export interface KeyPair {
+  [key: string]: any;
+}
 
-const createQueryBuilder = (prop: any) => {
-  const queryObject = function() {};
-  queryObject.chain = [prop];
-  const toJS: () => QueryBuilder = function() {
-    return queryObject.chain.map(item => {
-      if (item.type == 'nested') {
-        return {
-          type: 'nested',
-          query: item.query.toJS(),
-        };
-      }
-      return item;
-    });
-  };
-  const instance: any = new Proxy(queryObject, {
-    //@ts-ignore
-    get: function(obj, prop) {
-      if (prop == 'toJS') return toJS;
-      queryObject.chain.push(prop);
-      return instance;
+export class QueryBuilder {
+  collection: any;
+  constructor(collection: string) {
+    this.collection = collection;
+  }
+  create(obj: { data: KeyPair; select?: Array<string> }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'create',
+      payload: obj,
+    };
+  }
+  findOne(obj: { where: KeyPair; select?: Array<string> }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'findOne',
+      payload: obj,
+    };
+  }
+  findMany(obj: { where: KeyPair; select?: Array<string> }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'findMany',
+      payload: obj,
+    };
+  }
+  update(obj: {
+    where: KeyPair;
+    data: KeyPair;
+    select?: Array<string>;
+  }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'update',
+      payload: obj,
+    };
+  }
+  updateMany(obj: {
+    where: KeyPair;
+    data: KeyPair;
+    select?: Array<string>;
+  }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'updateMany',
+      payload: obj,
+    };
+  }
+  delete(obj: { where: KeyPair; select?: Array<string> }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'delete',
+      payload: obj,
+    };
+  }
+  deleteMany(obj: { where: KeyPair }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'deleteMany',
+      payload: obj,
+    };
+  }
+  count(obj: { where: KeyPair }): QueryData {
+    return {
+      collection: this.collection,
+      operation: 'count',
+      payload: obj,
+    };
+  }
+}
+export const db: RootQueryBuilder = new Proxy(
+  {},
+  {
+    get: (obj, prop: string) => {
+      return new QueryBuilder(prop);
     },
-    //@ts-ignore
-    apply: function(target, thisArg, argumentsList) {
-      if (typeof argumentsList[0] == 'function') {
-        queryObject.chain.push({
-          type: 'nested',
-          query: argumentsList[0](db),
-        });
-        return instance;
-      }
-      queryObject.chain.push({
-        type: 'function',
-        args: argumentsList,
-      });
-      return instance;
-    },
-  });
-  return instance;
-};
-export const db: any = new Proxy(function() {}, {
-  //@ts-ignore
-  get: (obj, prop) => {
-    return createQueryBuilder(prop);
-  },
-});
+  }
+);

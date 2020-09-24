@@ -1,6 +1,6 @@
-import { QueryBuilder } from './../interfaces';
+import { QueryData } from './../query';
 export interface Binding {
-  perform: (query: QueryBuilder) => Promise<any>;
+  perform: (query: QueryData) => Promise<any>;
 }
 
 export { default as RuntimeBinding } from './Runtime';
