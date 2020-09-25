@@ -3,10 +3,11 @@ import { Binding } from './';
 import { QueryData } from './../query';
 
 export default class RuntimeBinding implements Binding {
-  db: any = {
-    users: [],
-  };
+  db: any = {};
   perform(query: QueryData): Promise<any> {
+    if (!this.db[query.collection]) {
+      this.db[query.collection] = [];
+    }
     // TODO: remove this
     // @ts-ignore
     window['db'] = this.db;
