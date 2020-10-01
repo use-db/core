@@ -29,6 +29,10 @@ const App = () => {
       email: 'user3@email.com',
     },
   ];
+
+  // input.forEach(val => {
+  connection.query(db.users.create({ data: input[0] }));
+  // });
   const query3 = db.users.findMany({
     where: {
       // id: 4,
@@ -36,10 +40,6 @@ const App = () => {
     },
     select: ['name', 'email'],
   });
-
-  // input.forEach(val => {
-  //   connection.query(db.users.create({ data: val }));
-  // });
   let query4 = db.users.update({
     where: { id: 4 },
     data: { email: 'alice@prisma.io' },
@@ -60,9 +60,14 @@ const App = () => {
       name: 'user1',
     },
   });
-  connection.query(query7).then((resp: any) => {
-    // console.log('*** resp', resp);
+  connection.query(query3).then((resp: any) => {
+    console.log(' find', resp);
   });
+  setTimeout(() => {
+    connection.query(query3).then((resp: any) => {
+      console.log(' find again', resp);
+    });
+  }, 0);
   return <div>Hey</div>;
 };
 

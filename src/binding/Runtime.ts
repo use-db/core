@@ -8,7 +8,7 @@ export default class RuntimeBinding implements Binding {
     if (!this.db[query.collection]) {
       this.db[query.collection] = [];
     }
-    // TODO: remove this
+    // CAUTION: remove this
     // @ts-ignore
     window['db'] = this.db;
     return new Promise((resolve, reject) => {

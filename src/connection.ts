@@ -1,6 +1,8 @@
-import { QueryData } from './query';
+import { QueryData, GETTER_QUERIES } from './query';
 import { Binding } from './binding';
 import { Cache } from './cache';
+import { isNil } from 'lodash';
+
 export class Connection {
   bind: Binding;
   cache: Cache;
@@ -12,9 +14,22 @@ export class Connection {
     this.bind = bind;
   }
   query(query: QueryData): Promise<any> {
+    if (GETTER_QUERIES.includes(query.operation) && this.cache.has(query)) {
+      let cachedValue = this.cache.get(query);
+      if (!isNil(cachedValue)) {
+        return new Promise((resolve: any, reject: any) => {
+          resolve(cachedValue);
+        });
+      }
+    }
     return new Promise((resolve: any, reject: any) => {
       try {
-        resolve(this.bind.perform(query));
+        this.bind.perform(query).then(resp => {
+          if (GETTER_QUERIES.includes(query.operation)) {
+            this.cache.put(query, resp);
+          }
+          resolve(resp);
+        });
       } catch (err) {
         reject(err);
       }

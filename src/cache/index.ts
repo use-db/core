@@ -4,16 +4,19 @@ export class Cache {
   constructor() {
     this.data = new Map();
   }
-  get(query: QueryData) {
-    return this.data.get(JSON.stringify(query));
+  has(query: QueryData) {
+    return this.data.get(query.getHash()) ? true : false;
   }
-  update(query: QueryData, manipulators: any) {
-    const stringified = JSON.stringify(query);
-    let cachedManipulators = this.data.get(stringified);
-    if (cachedManipulators) {
-      cachedManipulators.push(manipulators);
-    } else {
-      this.data.set(stringified, [manipulators]);
-    }
+  get(query: QueryData) {
+    return this.data.get(query.getHash());
+  }
+  put(query: QueryData, data: any) {
+    this.data.set(query.getHash(), data);
+  }
+  forget(query: QueryData) {
+    this.data.delete(query.getHash());
+  }
+  flush() {
+    this.data = new Map();
   }
 }
