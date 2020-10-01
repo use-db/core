@@ -13,8 +13,12 @@ export class Connection {
   setBinding(bind: Binding) {
     this.bind = bind;
   }
-  query(query: QueryData): Promise<any> {
-    if (GETTER_QUERIES.includes(query.operation) && this.cache.has(query)) {
+  query(query: QueryData, disableCache?: boolean): Promise<any> {
+    if (
+      !disableCache &&
+      GETTER_QUERIES.includes(query.operation) &&
+      this.cache.has(query)
+    ) {
       let cachedValue = this.cache.get(query);
       if (!isNil(cachedValue)) {
         return new Promise((resolve: any, reject: any) => {
