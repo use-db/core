@@ -37,9 +37,9 @@ const App = () => {
     select: ['name', 'email'],
   });
 
-  input.forEach(val => {
-    connection.query(db.users.create({ data: val }));
-  });
+  // input.forEach(val => {
+  //   connection.query(db.users.create({ data: val }));
+  // });
   let query4 = db.users.update({
     where: { id: 4 },
     data: { email: 'alice@prisma.io' },
