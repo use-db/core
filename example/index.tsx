@@ -1,11 +1,14 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { db, Connection, RuntimeBinding } from '../';
+import { db, Connection, RuntimeBinding, LocalStorageBinding } from '../';
 
 const App = () => {
+  // const connection = new Connection({
+  //   bind: new RuntimeBinding(),
+  // });
   const connection = new Connection({
-    bind: new RuntimeBinding(),
+    bind: new LocalStorageBinding(),
   });
   let input = [
     {
@@ -31,7 +34,7 @@ const App = () => {
   ];
 
   // input.forEach(val => {
-  connection.query(db.users.create({ data: input[0] }));
+  //   connection.query(db.users.create({ data: val }));
   // });
   const query3 = db.users.findMany({
     where: {
@@ -44,12 +47,12 @@ const App = () => {
     where: { id: 4 },
     data: { email: 'alice@prisma.io' },
   });
-  const query5 = db.users.delete({
-    where: {
-      name: 'user2',
-    },
-    select: ['name', 'email'],
-  });
+  // const query5 = db.users.delete({
+  //   where: {
+  //     name: 'user2',
+  //   },
+  //   select: ['name', 'email'],
+  // });
   const query6 = db.users.deleteMany({
     where: {
       name: 'user1',
@@ -60,15 +63,20 @@ const App = () => {
       name: 'user1',
     },
   });
-  connection.query(query3).then((resp: any) => {
-    console.log(' find', resp);
+  connection.query(query7).then((resp: any) => {
+    console.log('find', resp);
   });
-  setTimeout(() => {
-    connection.query(query3).then((resp: any) => {
-      console.log(' find again', resp);
-    });
-  }, 0);
-  return <div>Hey</div>;
+  // setTimeout(() => {
+  //   connection.query(query3).then((resp: any) => {
+  //     console.log(' find again', resp);
+  //   });
+  // }, 0);
+  return (
+    <div>
+      Hey
+      <button onClick={() => localStorage.clear()}>Clear</button>
+    </div>
+  );
 };
 
 ReactDOM.render(<App />, document.getElementById('root'));

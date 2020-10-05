@@ -4,3 +4,4 @@ export interface Binding {
 }
 
 export { default as RuntimeBinding } from './Runtime';
+export { default as LocalStorageBinding } from './LocalStorage';
