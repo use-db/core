@@ -19,6 +19,11 @@ const App = () => {
   const connection = new Connection({
     bind: new CloudStorageBinding('http://localhost:3001'),
   });
+  if (connection.bind.getAllCollections) {
+    connection.bind.getAllCollections().then(res => {
+      console.log('*** 🔥res', res);
+    });
+  }
   let input = [
     {
       id: 1,
@@ -43,9 +48,9 @@ const App = () => {
   ];
 
   // input.forEach(val => {
-  //   connection
-  //     .query(db.users.create({ data: val }))
-  //     .then(resp => console.log(resp));
+  // connection
+  //   .query(db.users.create({ data: input[0] }))
+  //   .then(resp => console.log(resp));
   // });
   const query3 = db.users.findMany({
     where: {
@@ -66,7 +71,7 @@ const App = () => {
   });
   const query6 = db.users.deleteMany({
     where: {
-      name: 'user1',
+      // name: 'user1',
     },
   });
   const query7 = db.users.count({
@@ -77,14 +82,14 @@ const App = () => {
   // connection.query(query7).then((resp: any) => {
   //   console.log('find', resp);
   // });
-  setTimeout(() => {
-    // connection
-    //   .query(query7)
-    //   .then((resp: any) => {
-    //     console.log('query', resp);
-    //   })
-    //   .catch(err => console.log(err));
-  }, 200);
+  // setTimeout(() => {
+  //   connection
+  //     .query(query7)
+  //     .then((resp: any) => {
+  //       console.log('query', resp);
+  //     })
+  //     .catch(err => console.log(err));
+  // }, 200);
   return (
     <div>
       Hey

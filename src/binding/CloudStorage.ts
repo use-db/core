@@ -26,4 +26,20 @@ export default class CloudStorageBinding implements Binding {
       }
     });
   }
+  getAllCollections() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        let resp = await fetch(`${this.serverUrl}/get-collections`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        let data = await resp.json();
+        resolve(JSON.parse(data.data));
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
 }
