@@ -8,6 +8,7 @@
     "build": "parcel build index.html"
   },
   "dependencies": {
+    "@usedb/core": "^0.1.13",
     "react-app-polyfill": "^1.0.0"
   },
   "alias": {
