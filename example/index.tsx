@@ -1,14 +1,23 @@
 import 'react-app-polyfill/ie11';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { db, Connection, RuntimeBinding, LocalStorageBinding } from '../';
+import {
+  db,
+  Connection,
+  RuntimeBinding,
+  LocalStorageBinding,
+  CloudStorageBinding,
+} from '../';
 
 const App = () => {
   // const connection = new Connection({
   //   bind: new RuntimeBinding(),
   // });
+  // const connection = new Connection({
+  //   bind: new LocalStorageBinding(),
+  // });
   const connection = new Connection({
-    bind: new LocalStorageBinding(),
+    bind: new CloudStorageBinding('http://localhost:3001'),
   });
   let input = [
     {
@@ -34,12 +43,14 @@ const App = () => {
   ];
 
   // input.forEach(val => {
-  //   connection.query(db.users.create({ data: val }));
+  //   connection
+  //     .query(db.users.create({ data: val }))
+  //     .then(resp => console.log(resp));
   // });
   const query3 = db.users.findMany({
     where: {
       // id: 4,
-      name: 'user1',
+      // name: 'user1',
     },
     select: ['name', 'email'],
   });
@@ -47,12 +58,12 @@ const App = () => {
     where: { id: 4 },
     data: { email: 'alice@prisma.io' },
   });
-  // const query5 = db.users.delete({
-  //   where: {
-  //     name: 'user2',
-  //   },
-  //   select: ['name', 'email'],
-  // });
+  const query5 = db.users.delete({
+    where: {
+      name: 'user1',
+    },
+    select: ['name', 'email'],
+  });
   const query6 = db.users.deleteMany({
     where: {
       name: 'user1',
@@ -63,14 +74,17 @@ const App = () => {
       name: 'user1',
     },
   });
-  connection.query(query7).then((resp: any) => {
-    console.log('find', resp);
-  });
-  // setTimeout(() => {
-  //   connection.query(query3).then((resp: any) => {
-  //     console.log(' find again', resp);
-  //   });
-  // }, 0);
+  // connection.query(query7).then((resp: any) => {
+  //   console.log('find', resp);
+  // });
+  setTimeout(() => {
+    // connection
+    //   .query(query7)
+    //   .then((resp: any) => {
+    //     console.log('query', resp);
+    //   })
+    //   .catch(err => console.log(err));
+  }, 200);
   return (
     <div>
       Hey
