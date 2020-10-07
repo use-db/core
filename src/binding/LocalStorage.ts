@@ -4,6 +4,15 @@ import { QueryData } from './../query';
 
 export default class LocalStorageBinding implements Binding {
   db: any = typeof window !== undefined ? localStorage : {};
+  getAllCollections(): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        resolve([]);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
   perform(query: QueryData): Promise<any> {
     if (!this.db.getItem(query.collection)) {
       this.db.setItem(query.collection, JSON.stringify([]));

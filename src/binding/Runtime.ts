@@ -4,6 +4,15 @@ import { QueryData } from './../query';
 
 export default class RuntimeBinding implements Binding {
   db: any = {};
+  getAllCollections(): Promise<any> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        resolve([]);
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
   perform(query: QueryData): Promise<any> {
     if (!this.db[query.collection]) {
       this.db[query.collection] = [];

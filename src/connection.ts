@@ -4,7 +4,7 @@ import { Cache } from './cache';
 import { isNil } from 'lodash';
 
 export class Connection {
-  bind: Binding;
+  private bind: Binding;
   cache: Cache;
   constructor({ bind }: { bind: Binding }) {
     this.bind = bind;
@@ -12,6 +12,9 @@ export class Connection {
   }
   setBinding(bind: Binding) {
     this.bind = bind;
+  }
+  getAllCollections(): Promise<any> {
+    return this.bind.getAllCollections();
   }
   query(query: QueryData, disableCache?: boolean): Promise<any> {
     if (

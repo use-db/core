@@ -19,11 +19,14 @@ const App = () => {
   const connection = new Connection({
     bind: new CloudStorageBinding('http://localhost:3001'),
   });
-  if (connection.bind.getAllCollections) {
-    connection.bind.getAllCollections().then(res => {
-      console.log('*** 🔥res', res);
-    });
-  }
+  // if (connection.getAllCollections) {
+  //   const allCollections = connection.getAllCollections();
+  //   if (allCollections) {
+  //     allCollections.then(res => {
+  //       console.log('*** 🔥res', res);
+  //     });
+  //   }
+  // }
   let input = [
     {
       id: 1,
